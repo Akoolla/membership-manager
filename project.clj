@@ -5,10 +5,14 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.1"]
                  [ring/ring-defaults "0.2.1"]
-                 [hiccup "1.0.5"]
+                 [ring-webjars "0.1.1"]
 
+                 [hiccup "1.0.5"]
                  [org.webjars/bootstrap "3.3.6"]
-                 [org.webjars/bootswatch-paper "3.3.5+4"]]
+                 [org.webjars/bootswatch-paper "3.3.5+4"]
+
+                 [com.cemerick/friend "0.2.3"]
+                 [alandipert/enduro "1.2.0"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler membership-manager.handler/app}
   :profiles

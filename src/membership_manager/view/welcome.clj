@@ -4,9 +4,11 @@
    [membership-manager.view.common :refer :all]))
 
 (defn main-page
-  []
+  [authenticated?]
   (bootstrap-page
    {:title "Welcome"}
    [:div
     [:h1 "Welcome to the Membership Manager for [something]"]
-    [:p "This will be a application to help manage membership to [something]"]]))
+    (if authenticated?
+      [:p "Logged in, show some love"]
+      [:p "Login-Credentials"])]))
