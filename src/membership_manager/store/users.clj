@@ -16,11 +16,11 @@
 
 (defn authenticate
   [{:keys [username password]}]
-
   (let [user-record (get @storage
                          username)]
-    (when (creds/bcrypt-verify password (get user-record :password))
-      (dissoc user-record :password))))
+      (when (creds/bcrypt-verify password (get user-record :password))
+        (dissoc user-record :password))
+      user-record))
 
 (defn- add-security-concern
   [details]
@@ -44,7 +44,3 @@
      (catch Exception e
        (println e)
        ["User probably already exists or something."]))))
-
-(defn return-something
-  [something]
-  something)

@@ -1,6 +1,13 @@
 (ns membership-manager.view.common
   (:require
-   [hiccup.page :as h]))
+   [hiccup.page :as h]
+    [ring.util.anti-forgery :refer [anti-forgery-field]]))
+
+(defmacro form
+  [params & contents]
+  `[:form ~params
+    (anti-forgery-field)
+    ~@contents])
 
 (defmacro bootstrap-page
   [misc & elts]
@@ -26,7 +33,7 @@
        (for [c# ~(:css misc)] (h/include-css c#))
        [:title ~(:title misc)]]
       [:body {:onload ~(:onload misc)}
-       [:div {:style "padding-left:20px; padding-right:2px;"}
+       [:div.container
         ~@elts]
 
        ])

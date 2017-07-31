@@ -7,6 +7,7 @@
 
 (defroutes app-routes
   (GET "/" [] (view/main-page (middleware/authenticated?)))
+  (GET "/log-in/" [] (view/log-in))
   (route/not-found "Not Found"))
 
 (def app
