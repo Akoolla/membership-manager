@@ -1,14 +1,16 @@
 (ns membership-manager.view.welcome
   (:require
    [hiccup.page :as h]
-   [membership-manager.view.common :refer :all]))
+   [membership-manager.view.common :refer :all]
+   [environ.core :refer [env]]))
 
-
+(def app-name
+  (str (or (env :app-name) "something")))
 
 (defn log-in-form
   []
   (form
-   {:method "POST" :enctype "multipart/form-data"}
+   {:method "POST" :enctype "multipart/form-data" :action "/log-in/"}
    [:div#form-group
     [:label {:for "email-address"} "Email address"]
     [:input {:id "email-address"
@@ -37,7 +39,7 @@
   (bootstrap-page
    {:title "Welcome"}
    [:div
-    [:h1 "Welcome to the Membership Manager for [something]"]
+    [:h1 (clojure.string/join ["Welcome to the Membership Manager for: " app-name])]
     (if authenticated?
       [:p "Logged in, show some love"]
       (log-in-form))]))

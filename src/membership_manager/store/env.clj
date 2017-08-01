@@ -1,5 +1,6 @@
-(ns membership-manager.store.env)
+(ns membership-manager.store.env
+  (:require [environ.core :refer [env]]))
 
 (def storage-directory
   "The path to the directory where data should be stored."
-  (str (or (System/getenv "STORAGE_DIRECTORY") "data") "/"))
+  (str (or (env :storage-dir) "data") "/"))
