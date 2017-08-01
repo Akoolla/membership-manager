@@ -44,3 +44,6 @@
      (catch Exception e
        (println e)
        ["User probably already exists or something."]))))
+
+(defn change-password
+  [username])

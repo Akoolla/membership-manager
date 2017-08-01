@@ -31,7 +31,6 @@
        {:allow-anon? true
         :login-uri "/log-in/"
         :default-landing-uri "/"
-        ;; add a credential function here
         :credential-fn users/authenticate
         :workflows [(workflows/interactive-form)]
         })
@@ -39,7 +38,6 @@
       wrap-webjars
 
       (wrap-defaults site-defaults)
-;      wrap-multipart-params
       ))
 
 (defn log-out [location]

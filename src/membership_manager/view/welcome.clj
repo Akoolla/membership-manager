@@ -39,7 +39,9 @@
   (bootstrap-page
    {:title "Welcome"}
    [:div
-    [:h1 (clojure.string/join ["Welcome to the Membership Manager for: " app-name])]
+    [:h2 (clojure.string/join ["Welcome "
+                               (:username authenticated?)
+                               " to the Membership Manager for: " app-name])]
     (if authenticated?
       [:p "Logged in, show some love"]
       (log-in-form))]))
