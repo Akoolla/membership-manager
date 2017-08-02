@@ -28,6 +28,16 @@
          :roles #{::admin}
          :password (creds/hash-bcrypt (:password details))))
 
+(defn update-user
+  [details]
+  (let [details (add-security-concern details)]
+    (try
+      (enduro/swap!
+       storage
+       (fn [users]
+         (assoc users (:username details) details)))))
+  nil)
+
 (defn create-admin
   [details]
    (let [details (add-security-concern details)]    
@@ -46,4 +56,6 @@
        ["User probably already exists or something."]))))
 
 (defn change-password
-  [username])
+  [username password]
+  (update-user {:username :password}))
+
