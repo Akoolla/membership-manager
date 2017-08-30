@@ -33,7 +33,18 @@
 
 (deftest ammend-details
   (testing "Change password"
-    (let [user (users/create-admin {:username "admin" :password "changeMe"})
+    (let [user (users/create-admin {:username "admin" :password "changeMe" :first-name "wibble"})
           user (users/change-password "admin" "changed")
           user (users/authenticate {:username "admin" :password "changed"})]
-      (is (not(nil? user))))))
+      (is (not(nil? user)))
+      (is (= "admin" (:username user)))
+      (is (= "wibble" (:first-name user))))))
+
+(deftest can-list-users
+  ;;TODO Loop
+  (users/create-admin {:username "one@members.org"})
+  (users/create-admin {:username "two@members.org"})
+  (users/create-admin {:username "three@members.org"})
+  (testing "List all users"
+    (let [user-list (users/list-all)]
+      (is (not(nil? user-list))))))

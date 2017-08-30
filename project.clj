@@ -20,7 +20,7 @@
 
   :ring {:handler membership-manager.handler/app}
 
-  :profiles{:default {:env {:app-name "Things"
+  :profiles{:default {:env {:app-name "Membership Manager"
                             :create-admin-user "true"
                             :storage-dir "data"
                             :default-admin "admin@mm.org"

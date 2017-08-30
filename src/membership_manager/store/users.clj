@@ -14,6 +14,20 @@
   [username]
   (get @storage username))
 
+(defn list-all
+  []
+  ;@storage)
+  (let [users {}]
+    (reduce (fn [accum user]
+              (let [email (first user)
+                    details (second user)
+                    details (dissoc details :password)
+                    ;;{:username (:username details)}
+                   accum (assoc accum email details)]
+                accum))
+              users
+              @storage)))
+
 (defn authenticate
   [{:keys [username password]}]
   (let [user-record (get @storage
@@ -30,7 +44,11 @@
 
 (defn update-user
   [details]
-  (let [details (add-security-concern details)]
+  (let [existing (user-by-login (:username details))
+        existing (assoc existing
+                        :password (:password details)
+                        :change-password (:change-password details))
+        details (add-security-concern existing)]
     (try
       (enduro/swap!
        storage
@@ -57,5 +75,4 @@
 
 (defn change-password
   [username password]
-  (update-user {:username :password}))
-
+  (update-user {:username username :password password :change-password false}))

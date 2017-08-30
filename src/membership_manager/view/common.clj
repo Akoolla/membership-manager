@@ -1,7 +1,12 @@
 (ns membership-manager.view.common
   (:require
    [hiccup.page :as h]
-    [ring.util.anti-forgery :refer [anti-forgery-field]]))
+   [ring.util.anti-forgery :refer [anti-forgery-field]]
+   [membership-manager.routing.middleware :as middleware]
+   [environ.core :refer [env]]))
+
+(def app-name
+  (str (or (env :app-name) "Membership Manager")))
 
 (defmacro form
   [params & contents]
@@ -9,6 +14,26 @@
     (anti-forgery-field)
     ~@contents])
 
+(defn nav-bar
+  "Renders a navigation bar somewhere"
+  [user-details]
+  [:nav.navbar.navbar-default
+   [:div.container-fluid
+    [:div.navbar-header
+     [:button.navbar-toggle.collapsed {:data-toggle "collapse" :data-target "#bs-example-navbar-collapse-1" :aria-expanded "false"}
+      [:span.sr-only "Toggle navigation"]
+      [:span.icon-bar]
+      [:span.icon-bar]
+      [:span.icon-bar]]
+     [:a.navbar-brand {:href "/"} app-name]]
+    [:div.collapse.navbar-collapse {:id "bs-example-navbar-collapse-1"}
+     [:ul.nav.navbar-nav
+      [:li [:a {:href "#"} "Users List" ]]
+      [:li [:a {:href "/members/"} "Add User" ]]
+      [:li [:a {:href "/change-password/"} "Change Password" ]]
+      [:li [:a {:href "#"} "Log-out" ]]
+      ]]]])
+     
 (defmacro bootstrap-page
   [misc & elts]
   (let [misc
@@ -33,9 +58,12 @@
        (for [c# ~(:css misc)] (h/include-css c#))
        [:title ~(:title misc)]]
       [:body {:onload ~(:onload misc)}
-       [:div.container
-        ~@elts]
-
+       [:div
+        (if (empty? (middleware/authenticated?))
+          ""
+          (nav-bar (middleware/authenticated?)))
+        [:div.container
+        ~@elts]]
        ])
     )
   )

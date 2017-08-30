@@ -24,9 +24,7 @@
   ""
   [fn]
   (-> fn
-
       add-user-data
-
       (friend/authenticate
        {:allow-anon? true
         :login-uri "/log-in/"
@@ -34,11 +32,8 @@
         :credential-fn users/authenticate
         :workflows [(workflows/interactive-form)]
         })
-
       wrap-webjars
-
-      (wrap-defaults site-defaults)
-      ))
+      (wrap-defaults site-defaults)))
 
 (defn log-out [location]
  (friend/logout* (resp/redirect location)))

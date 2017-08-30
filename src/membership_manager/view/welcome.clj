@@ -4,14 +4,13 @@
    [membership-manager.view.common :refer :all]
    [environ.core :refer [env]]))
 
-(def app-name
-  (str (or (env :app-name) "something")))
-
 (defn log-in-form
   []
+  [:div
+  [:h4 "Please sign-in"]
   (form
    {:method "POST" :enctype "multipart/form-data" :action "/log-in/"}
-   [:div#form-group
+   [:div.form-group
     [:label {:for "email-address"} "Email address"]
     [:input {:id "email-address"
              :class "form-control"
@@ -20,13 +19,13 @@
              :type "email"
              :name "username"}]]
 
-   [:div#form-group
+   [:div.form-group
     [:label {:for "password"} "Password"]
     [:input {:type "password"
              :id "password"
              :class "form-control"}]]
 
-   [:button {:type "submit" :value "Log-in"} "Submit"]))
+   [:button {:type "submit" :value "Log-in"} "Submit"])])
 
 (defn log-in
   []
@@ -38,10 +37,9 @@
   [authenticated?]
   (bootstrap-page
    {:title "Welcome"}
-   [:div
-    [:h2 (clojure.string/join ["Welcome "
+   [:h2 (clojure.string/join ["Welcome "
                                (:username authenticated?)
-                               " to the Membership Manager for: " app-name])]
+                               " to " app-name])]
     (if authenticated?
       [:p "Logged in, show some love"]
-      (log-in-form))]))
+      (log-in-form))))
