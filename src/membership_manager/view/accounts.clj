@@ -37,8 +37,42 @@
      [:tbody
       (for [user users]
         [:tr
-         [:th (:no user)]
+         [:th (:mem-number user)]
          [:td (:username user)]
          [:td (clojure.string/join ", " [(:first-name user) (:second-name user)])]
          [:td (:expiry user)]])
       ]]]))
+
+(defn add-user
+  "View for adding a new user"
+  []
+  (bootstrap-page
+   {:title "Add new user"}
+   (form
+    {:method "POST" :enctype "multipart/form-data" :action "/admin/members/add"}
+    [:div
+     [:h3 "Add User"]
+     [:div.form-group
+      [:label {:for "username"} "Username/Email"]
+      [:input.form-control {:id "username"
+                            :name "username"
+                            :placeholder "User Name"
+                            :autofocus "autofocuss"}]]
+     [:div.form-group
+      [:label {:for "first-name"} "First Name"]
+      [:input.form-control {:id "first-name"
+                            :name "first-name"
+                            :placeholder "First Name"}]]
+     [:div.form-group
+      [:label {:for "second-name"} "Second Name"]
+      [:input.form-control {:id "second-name"
+                            :name "second-name"
+                            :placeholder "Second Name"}]]
+
+     [:div.form-group
+      [:label {:for "role"} "User Role"]
+      [:select.form-control {:name "role"}
+       [:option {:value "::User"} "User"]
+       [:option {:value "::Admin"} "Admin"]]]
+     
+     [:button.btn.btn-default {:type "submit"} "Add User"]])))

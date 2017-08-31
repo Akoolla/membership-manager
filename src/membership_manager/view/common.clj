@@ -28,8 +28,8 @@
      [:a.navbar-brand {:href "/"} app-name]]
     [:div.collapse.navbar-collapse {:id "bs-example-navbar-collapse-1"}
      [:ul.nav.navbar-nav
-      [:li [:a {:href "#"} "Users List" ]]
-      [:li [:a {:href "/members/"} "Add User" ]]
+      [:li [:a {:href "/admin/members/"} "Users List" ]]
+      [:li [:a {:href "/admin/members/add"} "Add User" ]]
       [:li [:a {:href "/change-password/"} "Change Password" ]]
       [:li [:a {:href "#"} "Log-out" ]]
       ]]]])

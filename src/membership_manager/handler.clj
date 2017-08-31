@@ -23,7 +23,16 @@
     (println "Not creating admin account")))
 
 (defroutes admin-routes
-  (GET "/members/" [] (account-views/member-list (vals (users/list-all)))))
+  (GET "/members/" [] (account-views/member-list (vals (users/list-all))))
+  (GET "/members/add" [] (account-views/add-user))
+  (POST "/members/add" {params :params}
+        (let [details {:username (:username params)
+                       :first-name (:first-name params)
+                       :second-name (:second-name params)
+                       :password "password"  ;;TODO auto-generate password and show on user added screen - will eventually be email to user?
+                       :change-password true}]
+          (users/create-user details #{})
+          (account-views/member-list (vals (users/list-all))))))
 
 (defroutes app-routes
   (GET "/" []

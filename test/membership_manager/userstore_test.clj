@@ -48,3 +48,16 @@
   (testing "List all users"
     (let [user-list (users/list-all)]
       (is (not(nil? user-list))))))
+
+(deftest create-user
+  (let [new-user (users/create-user {:username "four@members.org" :password "changeme" :first-name "four"} #{})
+        new-user (users/user-by-login "four@members.org")]
+    (testing "default-user-created"
+      (is (not(nil? new-user)))
+      (is (= "four@members.org" (:username new-user))))))
+
+(deftest membership-numbers
+  (testing "generate-membership-number"
+    (let [user-one (users/create-user {:username "five@members.org" :password "changeme"} #{})]
+      (println (users/generate-membership-number))
+      (is (= 1 1)))))
