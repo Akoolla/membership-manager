@@ -15,19 +15,19 @@
                  [alandipert/enduro "1.2.0"]
 
                  [environ "1.1.0"]]
+
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
-
   :ring {:handler membership-manager.handler/app}
+  :profiles
+  {:dev  {:dependencies [[javax.servlet/servlet-api "2.5"]
+                         [ring/ring-mock "0.3.0"]]}
 
-  :profiles{:default {:env {:app-name "Membership Manager"
-                            :create-admin-user "true"
-                            :storage-dir "data"
-                            :default-admin "admin@mm.org"
-                            :default-password "password"}}
+   :default {:env {:app-name "Membership Manager"
+                   :create-admin-user "true"
+                   :storage-dir "data"
+                   :default-admin "admin@mm.org"
+                   :default-password "password"}}
 
-            :test {:dependencies [[javax.servlet/servlet-api "2.5"]
-                         [ring/ring-mock "0.3.0"]]
-
-                   :env {:create-admin-user "false"
-                         :storage-dir "temp-data"}}})
+   :test {:env {:create-admin-user "false"
+                :storage-dir "temp-data"}}})

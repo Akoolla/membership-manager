@@ -1,13 +1,23 @@
 (ns membership-manager.handler
+  (:import java.net.URI)
   (:require [compojure.core :refer :all]
+            [compojure.core :as compojure :refer (GET POST ANY defroutes)]
             [compojure.route :as route]
-            [ring.util.response :as response]
-            [membership-manager.routing.middleware :as middleware]
-            [membership-manager.view.accounts :as account-views]
-            [membership-manager.view.welcome :as view]
-            [membership-manager.store.users :as users]
+                        
+            [ring.util.response :as resp]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [cemerick.friend :as friend]
-            [environ.core :refer [env]]))
+            (cemerick.friend [workflows :as workflows]
+                             [credentials :as creds])
+            [cemerick.friend.credentials :refer (hash-bcrypt)]
+            
+            [hiccup.page :as h]
+
+            [environ.core :refer [env]]
+            
+            [membership-manager.store.users :as users]
+            [membership-manager.view.welcome :as view]
+            [membership-manager.view.accounts :as account-views]))
 
 (defn- create-admin-user
   []
@@ -15,11 +25,7 @@
     (let [username (env :default-admin)
           password (env :default-password)]
       (if (nil? (users/user-by-login username))
-        (users/create-admin {:username username
-                             :first-name "Default"
-                             :second-name "Administrator"
-                             :password password
-                             :change-password true})))
+        (users/create-admin {:username username :password password})))
     (println "Not creating admin account")))
 
 (defroutes admin-routes
@@ -34,27 +40,36 @@
           (users/create-user details #{})
           (account-views/member-list (vals (users/list-all))))))
 
-(defroutes app-routes
-  (GET "/" []
-       (if (:change-password (middleware/authenticated?))
-         (account-views/change-password)
-         (view/main-page (middleware/authenticated?))))
-  
-  (GET "/log-in/" [] (view/log-in))
+(defroutes new-routes
+  (GET "/" [] (view/main-page))
+  (GET "/login" req (view/log-test))
+  (GET "/logout" req
+       (friend/logout* (resp/redirect (str (:context req) "/"))))
 
-  (GET "/change-password/" [] (account-views/change-password))
+  (GET "/change-password/" [] (view/change-password))
   (POST "/change-password/" [password]
-        (let [username (:username (middleware/authenticated?))]
+        (let [username (:username (friend/current-authentication))]
           (users/change-password username password)
-          (view/main-page (middleware/authenticated?))))
+          (view/main-page)))
 
-  (context "/admin" []  admin-routes)
-  
-  (route/not-found "Not Found"))
+  (context "/admin" []
+           (friend/wrap-authorize admin-routes #{::users/admin})))
 
 (def app
-  (middleware/wrap
-   app-routes))
+  (->
+   new-routes
+   (friend/authenticate
+    {:allow-anon? true
+     :login-uri "/login"
+     :default-landing-uri "/"
+     :unauthorized-handler #(-> (h/html5
+                                 [:h2 "You do not have sufficient privileges to access " (:uri %)])
+                                resp/response
+                                (resp/status 401))
+     :credential-fn #(users/authenticate %)
+     ;;:credential-fn #(creds/bcrypt-credential-fn @users %)
+     :workflows [(workflows/interactive-form)]})
+   (wrap-defaults site-defaults)))
 
 ;;Do some things on boot
 (create-admin-user)

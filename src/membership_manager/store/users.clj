@@ -56,11 +56,11 @@
 
 (defn authenticate
   [{:keys [username password]}]
-  (let [user-record (get @storage
-                         username)]
-      (when (creds/bcrypt-verify password (get user-record :password))
-        (dissoc user-record :password))
-      user-record))
+  (if-let [user-record (get @storage
+                            username)]
+    (when (creds/bcrypt-verify password (get user-record :password))
+      (dissoc user-record :password))
+    nil))
 
 (defn- encrypt-password
   [details]
@@ -70,7 +70,8 @@
   [details roles]
   (let [details (assoc details
                        :roles roles
-                       :mem-number (generate-membership-number))
+                       :mem-number (generate-membership-number)
+                       :change-password true)
         details (encrypt-password details)]
     details))
 
@@ -112,5 +113,4 @@
 (defn change-password
   [username password]
   (update-user {:username username :password password :change-password false}))
-
 

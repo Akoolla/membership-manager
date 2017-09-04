@@ -3,6 +3,7 @@
    [hiccup.page :as h]
    [ring.util.anti-forgery :refer [anti-forgery-field]]
    [membership-manager.routing.middleware :as middleware]
+   [cemerick.friend :as friend]
    [environ.core :refer [env]]))
 
 (def app-name
@@ -31,7 +32,7 @@
       [:li [:a {:href "/admin/members/"} "Users List" ]]
       [:li [:a {:href "/admin/members/add"} "Add User" ]]
       [:li [:a {:href "/change-password/"} "Change Password" ]]
-      [:li [:a {:href "#"} "Log-out" ]]
+      [:li [:a {:href "/logout"} "Log-out" ]]
       ]]]])
      
 (defmacro bootstrap-page
@@ -59,9 +60,9 @@
        [:title ~(:title misc)]]
       [:body {:onload ~(:onload misc)}
        [:div
-        (if (empty? (middleware/authenticated?))
+        (if (empty? (friend/current-authentication))
           ""
-          (nav-bar (middleware/authenticated?)))
+          (nav-bar (friend/current-authentication)))
         [:div.container
         ~@elts]]
        ])
