@@ -13,8 +13,11 @@
                        :first-name (:first-name params)
                        :second-name (:second-name params)
                        :password "password"  ;;TODO auto-generate password and show on user added screen - will eventually be email to user?
-                       :change-password true}]
-          (users/create-user details #{} (t/instant))
+                       :change-password true}
+              expiry-date (-> (t/zoned-date-time)
+                              (t/plus (t/years 1))
+                              t/instant)]
+          (users/create-user details #{} expiry-date)
           (account-views/member-list (vals (users/list-all))))))
 
 (defroutes all-routes
