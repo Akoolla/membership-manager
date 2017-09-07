@@ -2,22 +2,14 @@
   (:import java.net.URI)
   (:require [compojure.core :refer :all]
             [compojure.core :as compojure :refer (GET POST ANY defroutes)]
-            [compojure.route :as route]
-                        
-            [ring.util.response :as resp]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [cemerick.friend :as friend]
-            (cemerick.friend [workflows :as workflows]
-                             [credentials :as creds])
-            [cemerick.friend.credentials :refer (hash-bcrypt)]
             
-            [hiccup.page :as h]
-
             [environ.core :refer [env]]
             
             [membership-manager.store.users :as users]
-            [membership-manager.view.welcome :as view]
-            [membership-manager.view.accounts :as account-views]))
+            [membership-manager.routing.middleware :as middleware]
+            [membership-manager.routing.all :as all]
+            [membership-manager.routing.admin :as admin]
+            [membership-manager.routing.user :as user]))
 
 (defn- create-admin-user
   []
@@ -28,48 +20,13 @@
         (users/create-admin {:username username :password password})))
     (println "Not creating admin account")))
 
-(defroutes admin-routes
-  (GET "/members/" [] (account-views/member-list (vals (users/list-all))))
-  (GET "/members/add" [] (account-views/add-user))
-  (POST "/members/add" {params :params}
-        (let [details {:username (:username params)
-                       :first-name (:first-name params)
-                       :second-name (:second-name params)
-                       :password "password"  ;;TODO auto-generate password and show on user added screen - will eventually be email to user?
-                       :change-password true}]
-          (users/create-user details #{})
-          (account-views/member-list (vals (users/list-all))))))
-
-(defroutes new-routes
-  (GET "/" [] (view/main-page))
-  (GET "/login" req (view/log-test))
-  (GET "/logout" req
-       (friend/logout* (resp/redirect (str (:context req) "/"))))
-
-  (GET "/change-password/" [] (view/change-password))
-  (POST "/change-password/" [password]
-        (let [username (:username (friend/current-authentication))]
-          (users/change-password username password)
-          (view/main-page)))
-
-  (context "/admin" []
-           (friend/wrap-authorize admin-routes #{::users/admin})))
+(defroutes app-routes
+  all/all-routes
+  user/all-routes
+  admin/all-routes)
 
 (def app
-  (->
-   new-routes
-   (friend/authenticate
-    {:allow-anon? true
-     :login-uri "/login"
-     :default-landing-uri "/"
-     :unauthorized-handler #(-> (h/html5
-                                 [:h2 "You do not have sufficient privileges to access " (:uri %)])
-                                resp/response
-                                (resp/status 401))
-     :credential-fn #(users/authenticate %)
-     ;;:credential-fn #(creds/bcrypt-credential-fn @users %)
-     :workflows [(workflows/interactive-form)]})
-   (wrap-defaults site-defaults)))
+  (middleware/wrap app-routes))
 
 ;;Do some things on boot
 (create-admin-user)

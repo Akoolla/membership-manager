@@ -14,20 +14,20 @@
                  [com.cemerick/friend "0.2.3"]
                  [alandipert/enduro "1.2.0"]
 
-                 [environ "1.1.0"]]
+                 [environ "1.1.0"]
+                 [clojure.java-time "0.3.0"]
+                 [com.draines/postal "2.0.2"]]
 
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
   :ring {:handler membership-manager.handler/app}
   :profiles
-  {:dev  {:dependencies [[javax.servlet/servlet-api "2.5"]
-                         [ring/ring-mock "0.3.0"]]}
-
-   :default {:env {:app-name "Membership Manager"
+  {:default {:env {:app-name "Membership Manager"
                    :create-admin-user "true"
                    :storage-dir "data"
                    :default-admin "admin@mm.org"
                    :default-password "password"}}
 
    :test {:env {:create-admin-user "false"
-                :storage-dir "temp-data"}}})
+                :storage-dir "temp-data"}}
+})

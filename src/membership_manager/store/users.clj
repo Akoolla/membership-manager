@@ -2,7 +2,8 @@
   (:require
    [alandipert.enduro :as enduro]
    [membership-manager.store.env :as env]
-   [cemerick.friend.credentials :as creds]))
+   [cemerick.friend.credentials :as creds]
+   [java-time :as t]))
 
 (def storage
   ;; a map from user-id to user details, each being a map of attributes
@@ -89,9 +90,16 @@
          (assoc users (:username details) details)))))
   nil)
 
+(defn- format-expiry
+  [expiry]
+  (if-let [expiry expiry]
+    (t/to-java-date expiry)
+    expiry))
+
 (defn create-user
-  [details roles]
-  (let [details (add-security-concern details (conj roles ::user))]
+  [details roles expiry]
+  (let [details (add-security-concern details (conj roles ::user))
+        details (assoc details :expiry expiry)]
      (try
      (enduro/swap!
       storage
@@ -100,7 +108,8 @@
               proposed-username (:username details)]
           (if (username-exists proposed-username)
             (throw (Exception. (format "%s already registered" proposed-username)))
-            (assoc users proposed-username details)))))
+            (let [details (assoc details :expiry (format-expiry (:expiry details)))]
+              (assoc users proposed-username details))))))
      false
      (catch Exception e
        (println e)
@@ -108,7 +117,7 @@
 
 (defn create-admin
   [details]
-  (create-user details #{::admin}))
+  (create-user details #{::admin} nil))
         
 (defn change-password
   [username password]

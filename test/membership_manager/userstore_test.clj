@@ -1,6 +1,7 @@
 (ns membership-manager.userstore-test
   (:require
    [clojure.test :refer :all]
+   [java-time :as t]
    [membership-manager.store.users :as users]
    [clojure.java.io :refer [delete-file]]
    [environ.core :refer [env]]))
@@ -50,14 +51,18 @@
       (is (not(nil? user-list))))))
 
 (deftest create-user
-  (let [new-user (users/create-user {:username "four@members.org" :password "changeme" :first-name "four"} #{})
+  (let [new-user (users/create-user {:username "four@members.org"
+                                     :password "changeme"
+                                     :first-name "four"} #{}
+                                    (t/instant))
         new-user (users/user-by-login "four@members.org")]
     (testing "default-user-created"
       (is (not(nil? new-user)))
-      (is (= "four@members.org" (:username new-user))))))
+      (is (= "four@members.org" (:username new-user)))
+      (is (not(nil? (:expiry new-user)))))))
 
-(deftest membership-numbers
-  (testing "generate-membership-number"
-    (let [user-one (users/create-user {:username "five@members.org" :password "changeme"} #{})]
-      (println (users/generate-membership-number))
-      (is (= 1 1)))))
+;(;deftest membership-numbers
+  ;(testing "generate-membership-number"
+    ;(let [user-one (users/create-user {:username "five@members.org" :password "changeme"} #{} (t/local-date))]
+      ;(println (users/generate-membership-number))
+      ;(is (= 1 1)))))
