@@ -11,7 +11,7 @@
   (GET "/members/add" [] (account-views/add-user))
   (POST "/members/add" {params :params}
         (let [username (:username params)
-              password "password"
+              password (users/generate-password) 
               details {:username username
                        :first-name (:first-name params)
                        :second-name (:second-name params)

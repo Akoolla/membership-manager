@@ -13,6 +13,14 @@
 
 (def max-mem-numbers (atom 5000))
 (def new-num (atom nil))
+(def password-chars "abcdefghijklmnopqrstuwvxyz0123456789!?#$")
+
+(defn generate-password []
+  (->> (fn [] (rand-nth password-chars))
+       repeatedly
+       (take 8)
+       (apply str)))
+
 (defn generate-membership-number
   "Generates a random number that's not alread in a set of numbers"
   []
