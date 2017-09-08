@@ -21,7 +21,9 @@ To start a web server for the application, run:
 To allow the application to send emails you will need to create a profiles.clj file in the root directory, the file should look something like this
 
 ```clojure
-{:email {:env {:email-user "blah"
+{:email {:env {
+              :enabled true
+              :email-user "blah"
               :email-password "blah"
               :email-host "smtp.gmail.com"
               :email-port 465

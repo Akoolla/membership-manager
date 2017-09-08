@@ -26,7 +26,8 @@
                    :create-admin-user "true"
                    :storage-dir "data"
                    :default-admin "admin@mm.org"
-                   :default-password "password"}}
+                   :default-password "password"
+                   :site-url "http://localhost:3000"}}
 
    :test {:env {:create-admin-user "false"
                 :storage-dir "temp-data"}}
