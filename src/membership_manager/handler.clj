@@ -12,6 +12,7 @@
             [cemerick.friend.credentials :refer (hash-bcrypt)]
             
             [hiccup.page :as h]
+            [ring.middleware.webjars :refer [wrap-webjars]]
 
             [environ.core :refer [env]]
             
@@ -69,6 +70,8 @@
      :credential-fn #(users/authenticate %)
      ;;:credential-fn #(creds/bcrypt-credential-fn @users %)
      :workflows [(workflows/interactive-form)]})
+
+   wrap-webjars
    (wrap-defaults site-defaults)))
 
 ;;Do some things on boot
