@@ -2,7 +2,9 @@
   (:import java.net.URI)
   (:require [compojure.core :refer :all]
             [compojure.core :as compojure :refer (GET POST ANY defroutes)]
-            
+
+            [hiccup.page :as h]
+            [ring.middleware.webjars :refer [wrap-webjars]]
             [environ.core :refer [env]]
             
             [membership-manager.store.users :as users]
@@ -26,7 +28,21 @@
   admin/all-routes)
 
 (def app
-  (middleware/wrap app-routes))
+  (->
+   new-routes
+   (friend/authenticate
+    {:allow-anon? true
+     :login-uri "/login"
+     :default-landing-uri "/"
+     :unauthorized-handler #(-> (h/html5
+                                 [:h2 "You do not have sufficient privileges to access " (:uri %)])
+                                resp/response
+                                (resp/status 401))
+     :credential-fn #(users/authenticate %)
+     :workflows [(workflows/interactive-form)]})
+
+   wrap-webjars
+   (wrap-defaults site-defaults)))
 
 ;;Do some things on boot
 (create-admin-user)
