@@ -2,6 +2,7 @@
   (:require
    [clojure.test :refer :all]
    [java-time :as t]
+   [clj-time.format :as f]
    [membership-manager.store.users :as users]
    [clojure.java.io :refer [delete-file]]
    [environ.core :refer [env]]))
@@ -60,6 +61,12 @@
       (is (not(nil? new-user)))
       (is (= "four@members.org" (:username new-user)))
       (is (not(nil? (:expiry new-user)))))))
+
+(deftest parse-date
+  (let [custom-formatter (f/formatter "yyyy-dd-MM'T'HH:mm")
+        d (f/parse custom-formatter "2017-01-02T00:00")]
+    (println d)))
+
 
 ;(;deftest membership-numbers
   ;(testing "generate-membership-number"

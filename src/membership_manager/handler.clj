@@ -5,13 +5,19 @@
 
             [hiccup.page :as h]
             [ring.middleware.webjars :refer [wrap-webjars]]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]] 
+           
             [environ.core :refer [env]]
             
             [membership-manager.store.users :as users]
             [membership-manager.routing.middleware :as middleware]
             [membership-manager.routing.all :as all]
             [membership-manager.routing.admin :as admin]
-            [membership-manager.routing.user :as user]))
+            [membership-manager.routing.user :as user]
+            [ring.util.response :as resp]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows]
+                    [credentials :as creds])))
 
 (defn- create-admin-user
   []
@@ -29,7 +35,7 @@
 
 (def app
   (->
-   new-routes
+   app-routes
    (friend/authenticate
     {:allow-anon? true
      :login-uri "/login"

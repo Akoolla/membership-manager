@@ -16,7 +16,8 @@
 
                  [environ "1.1.0"]
                  [clojure.java-time "0.3.0"]
-                 [com.draines/postal "2.0.2"]]
+                 [com.draines/postal "2.0.2"]
+                 [clj-time "0.14.0"]]
 
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
